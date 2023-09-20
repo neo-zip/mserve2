@@ -28,9 +28,7 @@ const main = () => {
       `);
 
       return;
-   }
-
-   const commands = [Init, Help];
+   };
 
    switch (arg) {
       case 'help':
@@ -39,8 +37,8 @@ const main = () => {
       case 'init':
          Init();
          break;
-      case 'testlol':
-         FetchTest();
+      case 'docs':
+         Docs();
          break;
       default:
          console.log(`
