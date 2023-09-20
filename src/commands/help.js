@@ -1,5 +1,6 @@
+import chalk from 'chalk';
 
-const Help = (commands) => {
+const Help = () => {
    console.log(`${chalk.green('➜')} ${chalk.bold('More info about mserve at')} ${chalk.blueBright('https://neotap.net/mserve')}`);
    console.log('Avaliable commands are:')
 
@@ -16,7 +17,7 @@ const Help = (commands) => {
    ]
 
    commands.forEach((e) => {
-      console.log(`${chalk.blueBright(e.i)} (${e.size.display})`)
+      console.log(`mserve ${chalk.blueBright(e.name)}`)
    });
 
    return;

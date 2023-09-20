@@ -18,8 +18,6 @@ const storeData = async (path, data) => {
    const stored = JSON.stringify(data);
 
    fs.writeFile(path, stored, (err) => { console.error(err) });
-
-   return true;
 }
 
 const Init = async () => {
