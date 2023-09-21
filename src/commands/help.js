@@ -14,6 +14,12 @@ const Help = () => {
       {
          name: 'init',
       },
+      {
+         name: 'serve',
+      },
+      {
+         name: 'backup',
+      },
    ]
 
    commands.forEach((e) => {
