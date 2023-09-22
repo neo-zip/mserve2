@@ -6,16 +6,19 @@ import Init from './commands/init.js';
 import Help from './commands/help.js';
 import Docs from './commands/docs.js';
 import Serve from './commands/serve.js';
+import Test from './commands/test.js';
+import Delete from './commands/delete.js';
 
 // TODO
 /**
- * help /
- * docs /
- * init /
- * serve 
- * backup
- * latest
- * util
+ * help ✅
+ * docs ✅
+ * init ✅
+ * serve / - add options
+ * delete ✅ 
+ * backup 
+ * modify
+ * update
  */
 
 const main = () => {
@@ -36,7 +39,7 @@ const main = () => {
 
    switch (arg) {
       case 'help':
-         Help();
+         Help(args);
          break;
       case 'init':
          Init();
@@ -46,6 +49,12 @@ const main = () => {
          break;
       case 'serve':
          Serve(args);
+         break;
+      case 'test':
+         Test(args);
+         break;
+      case 'delete':
+         Delete(args);
          break;
       default:
          console.log(helpMessage);

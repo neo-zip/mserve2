@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import path from 'path';
 import fs from 'fs';
-import { exec, execSync } from 'child_process';
+import { spawn } from 'child_process';
 import { createSpinner } from 'nanospinner';
 
 const ask = async () => {
@@ -15,51 +15,66 @@ const ask = async () => {
       }
    })
 
-   return path.join(path.resolve(), directory.directory);
+   return path.resolve(directory.directory);
 }
 
-const start = async (directory) => {
-   let storage;
-
-   fs.readFile(path.join(directory, 'mserve.json'), 'utf8', (err, data) => {
+const getStorage = (directory) => {
+   const data = fs.readFileSync(path.resolve(path.join(directory, 'mserve.json')), { encoding: 'utf8' }, (err, data) => {
       if (err) {
          console.error(chalk.red('\nThere is no server in this location or there was an error starting it.'));
          return false;
       }
 
-      storage = JSON.parse(data);
+   });
 
-      if (!storage) {
-         console.error(chalk.red('\nThere is no data in this location. (check mserve.json)'));
-         return false;
-      }
 
-      console.log(`
+   if (!data) {
+      console.error(chalk.red('\nThere is no data in this location. (check mserve.json)'));
+      return false;
+   }
+
+   return JSON.parse(data);
+}
+
+const start = async (directory) => {
+   const storage = getStorage(directory);
+
+   console.log(`
       ${chalk.bgHex('#643bd7').bold('MSERVE')} 
-      ${chalk.bold('Serving!')}
+      ${chalk.bold(`Serving ${directory}!`)}
       ${chalk.green('➜')} Version: ${chalk.blueBright(storage.version)}
       ${chalk.green('➜')} Provider: ${chalk.blueBright(storage.provider)}
       ${chalk.green('➜')} Memory: ${chalk.blueBright(`${storage.ram}gb`)}
       ${chalk.green('➜')} Extra:${chalk.blueBright(storage.extra.map((e) => {
-         return ' ' + e;
-      }))}
+      return ' ' + e;
+   }))}
       `);
 
-      const spinner = createSpinner(chalk.gray(`Starting...`)).start()
+   const spinner = createSpinner(`
+      ${chalk.gray(`Starting...`)}
+   `).start();
+   const startTime = new Date();
 
-      exec(`cd ${directory} & java -Xms${storage.ram ?? 3}G -Xmx${storage.ram ?? 3}G -jar server.jar 0 --nogui`, (err, output) => {
-         if (err) {
-            console.error("could not execute command: ", err)
-            return
-         }
-
-         spinner.success({ text: output });
-      })
-
-      return true;
+   const runner = spawn(`java`, [`-Xms${storage.ram ?? 3}G`, `-Xmx${storage.ram ?? 3}G`, '-jar', 'server.jar', '0', '--nogui'], {
+      cwd: directory,
+      shell: true,
+      stdio: 'inherit'
    });
 
-   return false;
+   spinner.success({
+      text: `
+      ${chalk.bold('Loaded!')}
+   ` });
+
+   runner.on('close', () => {
+      const elapsed = new Date() - startTime;
+
+      const hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+
+      console.log(chalk.green(`\nServer had a clean exit! ${chalk.gray('Elapsed for')} ${chalk.blueBright(`${hours}h ${minutes}m ${seconds}s`)}`));
+   })
 }
 
 const Serve = async (args) => {
@@ -71,7 +86,7 @@ const Serve = async (args) => {
       return;
    }
 
-   start(path.join(path.resolve(), args[0]));
+   start(path.resolve(args[0]));
 
    return;
 };
