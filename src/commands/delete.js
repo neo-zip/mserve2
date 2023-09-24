@@ -27,7 +27,7 @@ const confirm = async () => {
 }
 
 const deleteServer = (directory) => {
-   fs.rmSync(path.resolve(directory), { recursive: true, force: true });
+   fs.rmSync(directory, { recursive: true, force: true });
 }
 
 const prompt = async (directory) => {
@@ -63,7 +63,7 @@ const Delete = async (args) => {
       return;
    }
 
-   await prompt(args[0]);
+   await prompt(path.resolve(args[0]));
 };
 
 export default Delete;

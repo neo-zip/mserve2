@@ -109,6 +109,8 @@ const Init = async (args) => {
       }
    })
 
+   console.log(`${chalk.bgYellow('Warning!')} ${chalk.bold('Backup features will require a high amount of storage space.')}`)
+
    const extra = await inquirer.prompt({
       name: 'extra',
       type: 'checkbox',
@@ -116,6 +118,7 @@ const Init = async (args) => {
       choices: [
          'Interval World Backup',
          'World Backup on Stop',
+         'World Backup on Start',
          'Restart on Stop',
       ]
    })

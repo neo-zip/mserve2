@@ -6,19 +6,20 @@ import Init from './commands/init.js';
 import Help from './commands/help.js';
 import Docs from './commands/docs.js';
 import Serve from './commands/serve.js';
-import Test from './commands/test.js';
 import Delete from './commands/delete.js';
+import Backup from './commands/backup.js';
 
 // TODO
 /**
- * help ✅
- * docs ✅
- * init ✅
- * serve / - add options
- * delete ✅ 
- * backup 
- * modify
- * update
+ * ✅ help
+ * ✅ docs
+ * ✅ init
+ * ✅ serve: - add options
+ * ✅ delete
+ * ✅ backup: - add clearing backups, storage limit, & interval clearing
+ * - modify 
+ * - update 
+ * - settings: - like language; etc
  */
 
 const main = () => {
@@ -50,8 +51,8 @@ const main = () => {
       case 'serve':
          Serve(args);
          break;
-      case 'test':
-         Test(args);
+      case 'backup':
+         Backup(args);
          break;
       case 'delete':
          Delete(args);

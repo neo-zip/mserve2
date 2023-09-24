@@ -4,8 +4,9 @@ import path from 'path';
 import fs from 'fs';
 import { spawn } from 'child_process';
 import { createSpinner } from 'nanospinner';
+import Backup from './backup.js';
 
-const ask = async () => {
+const askDirectory = async () => {
    const directory = await inquirer.prompt({
       name: 'directory',
       type: 'input',
@@ -24,7 +25,6 @@ const getStorage = (directory) => {
          console.error(chalk.red('\nThere is no server in this location or there was an error starting it.'));
          return false;
       }
-
    });
 
 
@@ -34,6 +34,18 @@ const getStorage = (directory) => {
    }
 
    return JSON.parse(data);
+}
+
+const intervalBackup = (directory, storage) => {
+   if (!storage.extra.includes('Interval World Backup')) {
+      return null;
+   }
+
+   const interval = setInterval(() => {
+      Backup([directory]);
+   }, (storage.interval ?? 30) * 1000 * 60);
+
+   return interval;
 }
 
 const start = async (directory) => {
@@ -50,10 +62,14 @@ const start = async (directory) => {
    }))}
       `);
 
-   const spinner = createSpinner(`
-      ${chalk.gray(`Starting...`)}
-   `).start();
+   const spinner = createSpinner(`${chalk.gray(`Starting...`)}`).start();
    const startTime = new Date();
+
+   if (storage.extra.includes('World Backup on Start')) {
+      Backup([directory]);
+   }
+
+   const autobackup = intervalBackup(directory, storage);
 
    const runner = spawn(`java`, [`-Xms${storage.ram ?? 3}G`, `-Xmx${storage.ram ?? 3}G`, '-jar', 'server.jar', '0', '--nogui'], {
       cwd: directory,
@@ -61,12 +77,18 @@ const start = async (directory) => {
       stdio: 'inherit'
    });
 
-   spinner.success({
-      text: `
-      ${chalk.bold('Loaded!')}
-   ` });
+   spinner.success({ text: `${chalk.green('Loaded!')}` });
+
 
    runner.on('close', () => {
+      if (autobackup) {
+         clearInterval(autobackup);
+      }
+
+      if (storage.extra.includes('World Backup on Stop')) {
+         Backup([directory]);
+      }
+
       const elapsed = new Date() - startTime;
 
       const hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -80,7 +102,7 @@ const start = async (directory) => {
 const Serve = async (args) => {
 
    if (!args) {
-      const route = await ask();
+      const route = await askDirectory();
       start(route);
 
       return;
