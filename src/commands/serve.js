@@ -5,6 +5,7 @@ import fs from 'fs';
 import { spawn } from 'child_process';
 import { createSpinner } from 'nanospinner';
 import Backup from './backup.js';
+import { intervalBackup } from '../lib/interval.js';
 
 const askDirectory = async () => {
    const directory = await inquirer.prompt({
@@ -17,6 +18,15 @@ const askDirectory = async () => {
    })
 
    return path.resolve(directory.directory);
+}
+
+const checkForDirectory = (directory) => {
+   if (fs.existsSync(directory)) {
+      return true;
+   }
+
+   console.log(chalk.red('The directory specified does not have a server.'));
+   return false;
 }
 
 const getStorage = (directory) => {
@@ -36,19 +46,11 @@ const getStorage = (directory) => {
    return JSON.parse(data);
 }
 
-const intervalBackup = (directory, storage) => {
-   if (!storage.extra.includes('Interval World Backup')) {
-      return null;
+const start = async (directory) => {
+   if (!checkForDirectory(directory)) {
+      return;
    }
 
-   const interval = setInterval(() => {
-      Backup([directory]);
-   }, (storage.interval ?? 30) * 1000 * 60);
-
-   return interval;
-}
-
-const start = async (directory) => {
    const storage = getStorage(directory);
 
    console.log(`

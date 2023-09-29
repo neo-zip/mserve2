@@ -71,7 +71,13 @@ const backupWorlds = (directory) => {
 
       fs.mkdirSync(route, (err) => { console.error(err) });
 
-      fs.cpSync(path.join(directory, e), route, { recursive: true, force: true }, (err) => { console.error(err) });
+      fs.cpSync(path.join(directory, e), route, {
+         recursive: true, filter: (file) => {
+            if (!file.includes('session.lock')) {
+               return true;
+            }
+         }
+      }, (err) => { console.error(err) });
    })
 
    spinner.success({ text: `${chalk.green('Backed-up worlds!')}` });

@@ -27,7 +27,15 @@ const confirm = async () => {
 }
 
 const deleteServer = (directory) => {
-   fs.rmSync(directory, { recursive: true, force: true });
+   try {
+      fs.rmSync(directory, { recursive: true, force: true });
+
+      return true;
+   } catch (err) {
+      console.error(chalk.red('There was an error! Make sure you aren\'t in the directory that you are deleting or that the server is still running.'), err);
+
+      return false;
+   }
 }
 
 const prompt = async (directory) => {
@@ -36,7 +44,12 @@ const prompt = async (directory) => {
    }
 
    if (await confirm()) {
-      deleteServer(directory);
+      const passed = deleteServer(directory);
+
+      if (!passed) {
+         return;
+      }
+
       console.log(chalk.green(`Deleted server at ${directory}!`))
       return;
    }

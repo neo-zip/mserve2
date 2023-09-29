@@ -20,6 +20,7 @@ import Backup from './commands/backup.js';
  * - modify 
  * - update 
  * - settings: - like language; etc
+ * - agree (agrees to eula)
  */
 
 const main = () => {
@@ -43,7 +44,7 @@ const main = () => {
          Help(args);
          break;
       case 'init':
-         Init();
+         Init(args);
          break;
       case 'docs':
          Docs(args);
