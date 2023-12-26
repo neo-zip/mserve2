@@ -9,20 +9,12 @@ import Serve from './commands/serve.js';
 import Delete from './commands/delete.js';
 import Backup from './commands/backup.js';
 
-// TODO
-/**
- * ✅ help
- * ✅ docs
- * ✅ init
- * ✅ serve: - add options
- * ✅ delete
- * ✅ backup: - add clearing backups, storage limit, & interval clearing
- * - modify 
- * - update 
- * - settings: - like language; etc
- * - agree (agrees to eula)
- */
 
+/**
+ * Main function that handles the command line arguments
+ * @return {void}
+ * @deprecated
+ */
 const main = () => {
    const arg = argv[2];
    const args = argv.length > 3 ? argv.slice(3) : undefined;
